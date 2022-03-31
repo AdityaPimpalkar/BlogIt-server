@@ -1,26 +1,37 @@
-import { hash } from "bcrypt";
-import userModel, { validate } from "@/models/users.model";
-import { User, CreateUser } from "@interfaces/users.interface";
+import { hash, compare } from "bcrypt";
+import { sign } from "jsonwebtoken";
+import { SECRET_KEY } from "@config";
+import userModel, { validateSignup, validateLogin } from "@/models/users.model";
+import {
+  User,
+  UserData,
+  SignupUser,
+  CreateUser,
+  LoginUser,
+} from "@interfaces/users.interface";
+import { Token, TokenData } from "@interfaces/auth.interface";
 import { isEmpty } from "@utils/util";
 import { HttpException } from "@exceptions/HttpException";
 
 class AuthService {
   private users = userModel;
 
-  public signup = async (user: CreateUser): Promise<User> => {
-    if (isEmpty(user)) throw new HttpException(400, "User data not found");
+  public signup = async (user: CreateUser): Promise<SignupUser> => {
+    if (isEmpty(user)) throw new HttpException(400, "Request body not found");
 
-    const validation = validate(user);
+    const validation = validateSignup(user);
 
     if (validation.error)
       throw new HttpException(400, `Invalid user data - ${validation.error}`);
 
-    const findUser: User = await this.users.findOne({ email: user.email });
+    const findUser: SignupUser = await this.users.findOne({
+      email: user.email,
+    });
     if (findUser)
-      throw new HttpException(409, `You're email ${user.email} already exists`);
+      throw new HttpException(409, `Your email ${user.email} already exists`);
 
     const hashedPassword = await hash(user.password, 10);
-    const createUserData: User = await this.users.create({
+    const createUserData: SignupUser = await this.users.create({
       ...user,
       fullName: `${user.firstName} ${user.lastName}`,
       password: hashedPassword,
@@ -28,6 +39,53 @@ class AuthService {
 
     return createUserData;
   };
+
+  public login = async (
+    user: LoginUser
+  ): Promise<{ tokenData: Token; userData: UserData }> => {
+    if (isEmpty(user)) throw new HttpException(400, "Request body not found");
+
+    const validation = validateLogin(user);
+
+    if (validation.error)
+      throw new HttpException(400, `Invalid user data - ${validation.error}`);
+
+    const findUser: User = await this.users.findOne({ email: user.email });
+    if (!findUser)
+      throw new HttpException(400, `Your email ${user.email} was not found.`);
+
+    const passwordMatched = await compare(user.password, findUser.password);
+    if (!passwordMatched) throw new HttpException(409, "Invalid password");
+
+    const tokenData = this.createToken(findUser);
+    const userData: UserData = {
+      _id: findUser._id,
+      firstName: findUser.firstName,
+      lastName: findUser.lastName,
+      fullName: findUser.fullName,
+      email: findUser.email,
+      avatar: findUser.avatar,
+    };
+
+    return { tokenData, userData };
+  };
+
+  private createToken(user: User): Token {
+    const dataInToken: TokenData = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      fullName: user.fullName,
+      email: user.email,
+    };
+    const secretKey: string = SECRET_KEY;
+    const expiresIn: number = 60 * 60;
+
+    return {
+      token: sign(dataInToken, secretKey, { expiresIn }),
+      expiresIn,
+    };
+  }
 }
 
 export default AuthService;

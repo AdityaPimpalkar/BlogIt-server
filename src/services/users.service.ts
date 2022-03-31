@@ -1,31 +1,51 @@
-import { hash } from "bcrypt";
-import userModel, { validate } from "@/models/users.model";
-import { User, CreateUser } from "@interfaces/users.interface";
-import { isEmpty } from "@utils/util";
-import { HttpException } from "@exceptions/HttpException";
+import { UpdateUser, UserData } from "@/interfaces/users.interface";
+import userModel, { validateUpdate } from "@/models/users.model";
+import { isEmpty } from "@/utils/util";
+import { HttpException } from "@/exceptions/HttpException";
+import { Schema } from "mongoose";
 
 class UserService {
-  public users = userModel;
+  private users = userModel;
 
-  public async createUser(user: CreateUser): Promise<User> {
-    if (isEmpty(user)) throw new HttpException(400, "User data not found");
+  public getUser = async (userId: Schema.Types.ObjectId): Promise<UserData> => {
+    if (isEmpty(userId))
+      throw new HttpException(400, "No user details in body");
 
-    const validation = validate(user);
-    if (validation.error)
-      throw new HttpException(400, `Invalid user data - ${validation.value}`);
-
-    const findUser: User = await this.users.findOne({ email: user.email });
-    if (findUser)
-      throw new HttpException(409, `You're email ${user.email} already exists`);
-
-    const hashedPassword = await hash(user.password, 10);
-    const createUserData: User = await this.users.create({
-      ...user,
-      password: hashedPassword,
+    const user: UserData = await this.users.findById(userId, {
+      _id: 0,
+      password: 0,
+      __v: 0,
     });
 
-    return createUserData;
-  }
+    return user;
+  };
+
+  public updateUser = async (
+    userId: Schema.Types.ObjectId,
+    user: UpdateUser
+  ): Promise<UserData> => {
+    if (isEmpty(user)) throw new HttpException(400, "No user details in body");
+
+    const validation = validateUpdate(user);
+    if (validation.error)
+      throw new HttpException(400, `Invalid user data - ${validation.error}`);
+
+    const updatedUser: UserData = await this.users.findByIdAndUpdate(
+      userId,
+      { ...user, fullName: `${user.firstName} ${user.lastName}` },
+      {
+        new: true,
+        projection: {
+          _id: 0,
+          password: 0,
+          __v: 0,
+        },
+        upsert: true,
+      }
+    );
+
+    return updatedUser;
+  };
 }
 
 export default UserService;
