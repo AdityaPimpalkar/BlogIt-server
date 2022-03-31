@@ -34,6 +34,10 @@ const userSchema: Schema = new Schema({
     required: true,
     trim: true,
   },
+  avatar: {
+    type: String,
+    trim: true,
+  },
 });
 
 const userModel = model<User & Document>("User", userSchema);
@@ -49,8 +53,7 @@ const createUserSchema = Joi.object({
 const updateUserSchema = Joi.object({
   firstName: Joi.string().required().min(3).max(30),
   lastName: Joi.string().required().min(3).max(30),
-  email: Joi.string().email().required(),
-  password: Joi.string().required(),
+  avatar: Joi.string(),
 });
 
 const loginUserSchema = Joi.object({

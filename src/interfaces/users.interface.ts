@@ -1,5 +1,7 @@
+import { Schema } from "mongoose";
+
 export interface User {
-  _id: string;
+  _id: Schema.Types.ObjectId;
   firstName: string;
   lastName: string;
   fullName: string;
@@ -9,7 +11,7 @@ export interface User {
 }
 
 export interface UserData {
-  _id: string;
+  _id: Schema.Types.ObjectId;
   firstName: string;
   lastName: string;
   fullName: string;
@@ -35,7 +37,7 @@ export interface UpdateUser {
   firstName: string;
   lastName: string;
   fullName: string;
-  email: string;
+  avatar: string;
 }
 
 export interface LoginUser {

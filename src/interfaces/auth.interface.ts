@@ -1,10 +1,11 @@
 import { Request } from "express";
+import { Schema } from "mongoose";
 export interface Token {
   token: string;
   expiresIn: number;
 }
 export interface TokenData {
-  _id: string;
+  _id: Schema.Types.ObjectId;
   firstName: string;
   lastName: string;
   fullName: string;

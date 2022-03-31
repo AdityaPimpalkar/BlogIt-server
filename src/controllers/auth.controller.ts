@@ -1,16 +1,31 @@
-import { NextFunction, Request, request, Response, response } from "express";
-import { User, CreateUser } from "@/interfaces/users.interface";
+import { NextFunction, Request, Response } from "express";
+import {
+  SignupUser,
+  CreateUser,
+  LoginUser,
+} from "@/interfaces/users.interface";
 import AuthService from "@/services/auth.service";
 
 class AuthController {
   public authService = new AuthService();
 
-  public signUp = async (req: Request, res: Response, next: NextFunction) => {
+  public signup = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userData: CreateUser = req.body;
-      const signUpUser: User = await this.authService.signup(userData);
+      const user: SignupUser = await this.authService.signup(userData);
 
-      res.status(201).json(signUpUser);
+      res.status(201).json(user);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public login = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const loginDetails: LoginUser = req.body;
+      const user = await this.authService.login(loginDetails);
+
+      res.status(200).json(user);
     } catch (error) {
       next(error);
     }
