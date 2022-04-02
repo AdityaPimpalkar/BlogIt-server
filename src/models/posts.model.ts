@@ -38,8 +38,8 @@ export default postsModel;
 
 const createPostSchema = Joi.object({
   image: Joi.string(),
-  title: Joi.string().min(3).max(50).required(),
-  subTitle: Joi.string().min(3).max(50),
+  title: Joi.string().min(3).max(100).required(),
+  subTitle: Joi.string().min(3).max(100),
   description: Joi.string().min(3).max(500),
   isPublished: Joi.boolean().required(),
   publishedOn: Joi.number(),
@@ -49,8 +49,8 @@ const createPostSchema = Joi.object({
 const updatePostSchema = Joi.object({
   _id: Joi.string().required(),
   image: Joi.string(),
-  title: Joi.string().min(3).max(50).required(),
-  subTitle: Joi.string().min(3).max(50),
+  title: Joi.string().min(3).max(100).required(),
+  subTitle: Joi.string().min(3).max(100),
   description: Joi.string().min(3).max(500),
   isPublished: Joi.boolean().required(),
   publishedOn: Joi.number(),

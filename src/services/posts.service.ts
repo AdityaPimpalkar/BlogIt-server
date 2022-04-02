@@ -45,10 +45,12 @@ class PostsService {
 
     if (post.isPublished && !post.publishedOn) post.publishedOn = Date.now();
 
-    const updatedPost = await this.posts.findByIdAndUpdate(post._id, post, {
-      new: true,
-      upsert: true,
-    });
+    const updatedPost = await this.posts
+      .findByIdAndUpdate(post._id, post, {
+        new: true,
+        upsert: true,
+      })
+      .select({ createdBy: 0, __v: 0 });
 
     return updatedPost;
   };
@@ -63,10 +65,12 @@ class PostsService {
     const postExist = await this.posts.findById(postId);
     if (!postExist) throw new HttpException(409, "Post does not exist.");
 
-    if (createdBy !== postExist.createdBy)
+    if (JSON.stringify(createdBy) !== JSON.stringify(postExist.createdBy))
       throw new HttpException(403, "Not authorized to delete this post.");
 
-    const updatedPost = await this.posts.findByIdAndRemove(postId);
+    const updatedPost = await this.posts
+      .findByIdAndRemove(postId)
+      .select({ createdBy: 0, __v: 0 });
 
     return updatedPost;
   };
@@ -78,7 +82,7 @@ class PostsService {
     const postExist = await this.posts.findById(postId);
     if (!postExist) throw new HttpException(409, "Post does not exist.");
 
-    const updatedPost = await this.posts.findById(postId);
+    const updatedPost = await this.posts.findById(postId).select({ __v: 0 });
 
     return updatedPost;
   };
@@ -86,7 +90,9 @@ class PostsService {
   public getPosts = async (
     createdBy: Schema.Types.ObjectId
   ): Promise<Posts[]> => {
-    const updatedPost = await this.posts.find({ createdBy });
+    const updatedPost = await this.posts
+      .find({ createdBy })
+      .select({ createdBy: 0, __v: 0 });
 
     return updatedPost;
   };

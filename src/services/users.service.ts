@@ -11,7 +11,7 @@ class UserService {
     if (isEmpty(userId))
       throw new HttpException(400, "No user details in body");
 
-    const user: UserData = await this.users.findById(userId, {
+    const user: UserData = await this.users.findById(userId).select({
       _id: 0,
       password: 0,
       __v: 0,
@@ -30,19 +30,20 @@ class UserService {
     if (validation.error)
       throw new HttpException(400, `Invalid user data - ${validation.error}`);
 
-    const updatedUser: UserData = await this.users.findByIdAndUpdate(
-      userId,
-      { ...user, fullName: `${user.firstName} ${user.lastName}` },
-      {
-        new: true,
-        projection: {
-          _id: 0,
-          password: 0,
-          __v: 0,
-        },
-        upsert: true,
-      }
-    );
+    const updatedUser: UserData = await this.users
+      .findByIdAndUpdate(
+        userId,
+        { ...user, fullName: `${user.firstName} ${user.lastName}` },
+        {
+          new: true,
+          upsert: true,
+        }
+      )
+      .select({
+        _id: 0,
+        password: 0,
+        __v: 0,
+      });
 
     return updatedUser;
   };
