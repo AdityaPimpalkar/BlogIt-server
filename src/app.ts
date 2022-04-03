@@ -9,6 +9,7 @@ import errorMiddleware from "@middlewares/error.middleware";
 import auth from "@routes/auth.route";
 import posts from "@routes/posts.route";
 import users from "@routes/users.route";
+import comments from "@routes/comments.route";
 
 const app = express();
 const logger = new Logger();
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/auth", auth);
 app.use("/posts", posts);
+app.use("/comments", comments);
 app.use("/me", users);
 
 app.use(errorMiddleware);
