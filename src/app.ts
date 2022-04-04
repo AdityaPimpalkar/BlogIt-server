@@ -1,41 +1,12 @@
-import { connect, disconnect } from "mongoose";
 import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import Logger from "@utils/logger";
-import { dbConnection } from "@databases";
-import { NODE_ENV, PORT, ORIGIN } from "@config";
-import errorMiddleware from "@middlewares/error.middleware";
-import auth from "@routes/auth.route";
-import posts from "@routes/posts.route";
-import users from "@routes/users.route";
-import comments from "@routes/comments.route";
+import { NODE_ENV, PORT } from "@config";
+import initializeRoutes from "@startup/routes.startup";
+import initializeDatabase from "@startup/db.startup";
 
 const app = express();
-const logger = new Logger();
 
-app.use(cors({ origin: ORIGIN }));
-app.use(helmet());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use("/auth", auth);
-app.use("/posts", posts);
-app.use("/comments", comments);
-app.use("/me", users);
-
-app.use(errorMiddleware);
-
-connect(dbConnection.url, dbConnection.options, (error) => {
-  if (error) {
-    logger.error(error.message);
-    return;
-  } else {
-    logger.info(`=================================`);
-    logger.info(`Connected to database...`);
-    logger.info(`=================================`);
-  }
-});
+initializeRoutes(app);
+initializeDatabase();
 
 app.listen(PORT || 3000, () => {
   console.log(`=================================`);
