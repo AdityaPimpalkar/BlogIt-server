@@ -8,9 +8,11 @@ const app = express();
 initializeRoutes(app);
 initializeDatabase();
 
-app.listen(PORT || 3000, () => {
+const server = app.listen(PORT || 3000, () => {
   console.log(`=================================`);
   console.log(`======= ENV: ${NODE_ENV || "DEVELOPEMENT"} =======`);
   console.log(`🚀 App listening on the port ${PORT}`);
   console.log(`=================================`);
 });
+
+export default server;

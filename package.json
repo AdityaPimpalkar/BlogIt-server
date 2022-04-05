@@ -9,7 +9,7 @@
     "dev": "npm run build && cross-env NODE_ENV=development nodemon",
     "build": "tsc && tsc-alias",
     "build:swc": "swc src -d dist --source-maps --copy-files",
-    "test": "jest --forceExit --detectOpenHandles",
+    "test": "NODE_ENV=test jest --forceExit --detectOpenHandles",
     "lint": "eslint --ignore-path .gitignore --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
     "deploy:prod": "npm run build && pm2 start ecosystem.config.js --only prod",
@@ -43,6 +43,7 @@
     "node-config": "^0.0.2",
     "node-gyp": "^8.1.0",
     "nodemon": "^2.0.15",
+    "supertest": "^6.2.2",
     "tsc-alias": "^1.4.1",
     "tsconfig-paths": "^3.10.1",
     "typescript": "^4.5.2"
