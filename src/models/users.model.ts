@@ -1,11 +1,14 @@
 import { Schema, Document, model } from "mongoose";
 import Joi from "joi";
+import { sign } from "jsonwebtoken";
 import {
   User,
   CreateUser,
   LoginUser,
   UpdateUser,
 } from "@interfaces/users.interface";
+import { Token, TokenData } from "@/interfaces/auth.interface";
+import { SECRET_KEY } from "@/config";
 
 const userSchema: Schema = new Schema({
   firstName: {
@@ -69,3 +72,20 @@ export const validateLogin = (user: LoginUser) =>
 
 export const validateUpdate = (user: UpdateUser) =>
   updateUserSchema.validate(user);
+
+export const createToken = (user: User): Token => {
+  const dataInToken: TokenData = {
+    _id: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    fullName: user.fullName,
+    email: user.email,
+  };
+  const secretKey: string = SECRET_KEY;
+  const expiresIn: number = 60 * 60;
+
+  return {
+    token: sign(dataInToken, secretKey, { expiresIn }),
+    expiresIn,
+  };
+};
