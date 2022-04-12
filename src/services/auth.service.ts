@@ -1,7 +1,11 @@
 import { hash, compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
 import { SECRET_KEY } from "@config";
-import userModel, { validateSignup, validateLogin } from "@/models/users.model";
+import userModel, {
+  validateSignup,
+  validateLogin,
+  createToken,
+} from "@/models/users.model";
 import {
   User,
   UserData,
@@ -57,7 +61,7 @@ class AuthService {
     const passwordMatched = await compare(user.password, findUser.password);
     if (!passwordMatched) throw new HttpException(409, "Invalid password");
 
-    const tokenData = this.createToken(findUser);
+    const tokenData = createToken(findUser);
     const userData: UserData = {
       _id: findUser._id,
       firstName: findUser.firstName,
@@ -69,23 +73,6 @@ class AuthService {
 
     return { tokenData, userData };
   };
-
-  private createToken(user: User): Token {
-    const dataInToken: TokenData = {
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      fullName: user.fullName,
-      email: user.email,
-    };
-    const secretKey: string = SECRET_KEY;
-    const expiresIn: number = 60 * 60;
-
-    return {
-      token: sign(dataInToken, secretKey, { expiresIn }),
-      expiresIn,
-    };
-  }
 }
 
 export default AuthService;
