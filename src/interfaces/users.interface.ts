@@ -36,7 +36,6 @@ export interface CreateUser {
 export interface UpdateUser {
   firstName: string;
   lastName: string;
-  fullName: string;
   avatar: string;
 }
 

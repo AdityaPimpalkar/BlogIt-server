@@ -15,11 +15,15 @@ const userSchema: Schema = new Schema({
     type: String,
     required: true,
     trim: true,
+    minLength: 3,
+    maxLength: 30,
   },
   lastName: {
     type: String,
     required: true,
     trim: true,
+    minLength: 3,
+    maxLength: 30,
   },
   fullName: {
     type: String,
