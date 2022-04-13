@@ -8,9 +8,6 @@ class UserService {
   private users = userModel;
 
   public getUser = async (userId: Schema.Types.ObjectId): Promise<UserData> => {
-    if (isEmpty(userId))
-      throw new HttpException(400, "No user details in body");
-
     const user: UserData = await this.users.findById(userId).select({
       _id: 0,
       password: 0,

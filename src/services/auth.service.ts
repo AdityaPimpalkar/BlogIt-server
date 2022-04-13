@@ -47,7 +47,7 @@ class AuthService {
   public login = async (
     user: LoginUser
   ): Promise<{ tokenData: Token; userData: UserData }> => {
-    if (isEmpty(user)) throw new HttpException(400, "Request body not found");
+    if (isEmpty(user)) throw new HttpException(400, "No login details in body");
 
     const validation = validateLogin(user);
 
