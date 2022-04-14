@@ -5,7 +5,7 @@ import postsModel, {
   validateUpdatePost,
 } from "@/models/posts.model";
 import { isEmpty } from "@/utils/util";
-import { Schema } from "mongoose";
+import { mongo, Schema } from "mongoose";
 
 class PostsService {
   private posts = postsModel;
@@ -14,11 +14,14 @@ class PostsService {
     createdBy: Schema.Types.ObjectId,
     post: CreatePost
   ): Promise<Posts> => {
-    if (isEmpty(post)) throw new HttpException(400, "No post details in body");
+    if (isEmpty(post)) throw new HttpException(400, "No post details in body.");
 
     const validation = validateCreatePost(post);
     if (validation.error)
-      throw new HttpException(400, `Invalid post data - ${validation.error}`);
+      throw new HttpException(
+        400,
+        `Invalid post details - ${validation.error}`
+      );
 
     if (post.isPublished && !post.publishedOn) post.publishedOn = Date.now();
 
@@ -31,11 +34,14 @@ class PostsService {
     createdBy: Schema.Types.ObjectId,
     post: UpdatePost
   ): Promise<Posts> => {
-    if (isEmpty(post)) throw new HttpException(400, "No post details in body");
+    if (isEmpty(post)) throw new HttpException(400, "No post details in body.");
 
     const validation = validateUpdatePost(post);
     if (validation.error)
-      throw new HttpException(400, `Invalid post data - ${validation.error}`);
+      throw new HttpException(
+        400,
+        `Invalid post details - ${validation.error}`
+      );
 
     const postExist = await this.posts.findById(post._id);
     if (!postExist) throw new HttpException(409, "Post does not exist.");
@@ -61,6 +67,9 @@ class PostsService {
   ): Promise<Posts> => {
     if (isEmpty(postId))
       throw new HttpException(400, "No post id found in request.");
+
+    if (!mongo.ObjectId.isValid(postId))
+      throw new HttpException(400, "Invalid id.");
 
     const postExist = await this.posts.findById(postId);
     if (!postExist) throw new HttpException(409, "Post does not exist.");
