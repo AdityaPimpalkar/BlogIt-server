@@ -18,6 +18,7 @@ describe("/auth", () => {
   afterAll(async () => {
     appServer.close();
     await disconnect();
+    await new Promise<void>((resolve) => setTimeout(() => resolve(), 500));
   });
 
   describe("/signup", () => {

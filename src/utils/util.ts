@@ -1,5 +1,5 @@
 export const isEmpty = (value: string | number | object): boolean => {
-  if (value === null) {
+  if (value === null || value === "null") {
     return true;
   } else if (typeof value !== "number" && value === "") {
     return true;
