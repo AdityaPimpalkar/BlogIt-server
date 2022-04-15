@@ -598,7 +598,6 @@ describe("/posts", () => {
 
       it("should return 404 if postId is passed empty/null", async () => {
         const tokenData = createToken(createdUser);
-        const id = new mongo.ObjectId().toHexString();
         const res = await request(appServer)
           .delete(`/posts/null`)
           .set("Authorization", `Bearer ${tokenData.token}`);
@@ -690,6 +689,16 @@ describe("/posts", () => {
         expect(res.body.message).toMatch(/No post id found in request./);
       });
 
+      it("should return 400 if postId passed was not valid", async () => {
+        const tokenData = createToken(createdUser);
+        const res = await request(appServer)
+          .get(`/posts/1234`)
+          .set("Authorization", `Bearer ${tokenData.token}`);
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toMatch(/Invalid id./);
+      });
+
       it("should return 409 if post does not exist", async () => {
         const tokenData = createToken(createdUser);
         const id = new mongo.ObjectId().toHexString();
@@ -702,7 +711,7 @@ describe("/posts", () => {
         expect(res.body.message).toMatch(/Post does not exist./);
       });
 
-      it("should delete and return deleted post object if client passed a valid postId", async () => {
+      it("should return post object by id", async () => {
         const tokenData = createToken(createdUser);
         const post = {
           title: "aaa",
