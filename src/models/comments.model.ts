@@ -25,14 +25,14 @@ const commentsModel = model<Comments & Document>("Comments", commentSchema);
 export default commentsModel;
 
 const createCommentSchema = Joi.object({
-  postId: Joi.string().required(),
-  comment: Joi.string().required(),
-  commentBy: Joi.string().required(),
+  postId: Joi.string().not().empty().required(),
+  comment: Joi.string().not().empty().required(),
+  commentBy: Joi.string().not().empty().required(),
 });
 
 const updateCommentSchema = Joi.object({
-  _id: Joi.string().required(),
-  comment: Joi.string().required(),
+  _id: Joi.string().not().empty().required(),
+  comment: Joi.string().not().empty().required(),
 });
 
 export const validateCreateComment = (comment: CreateComment) =>

@@ -9,7 +9,7 @@ import commentsModel, {
 } from "@/models/comments.model";
 import postsModel from "@/models/posts.model";
 import { isEmpty } from "@/utils/util";
-import { Schema } from "mongoose";
+import { mongo, Schema } from "mongoose";
 
 class CommentsService {
   private comments = commentsModel;
@@ -78,6 +78,9 @@ class CommentsService {
     if (isEmpty(commentId))
       throw new HttpException(400, "No comment id found in request.");
 
+    if (!mongo.ObjectId.isValid(commentId))
+      throw new HttpException(400, "Invalid id.");
+
     const commentExists = await this.comments.findById(commentId);
     if (!commentExists) throw new HttpException(404, "Comment does not exist.");
 
@@ -98,6 +101,9 @@ class CommentsService {
     if (isEmpty(commentId))
       throw new HttpException(400, "No comment id found in request.");
 
+    if (!mongo.ObjectId.isValid(commentId))
+      throw new HttpException(400, "Invalid id.");
+
     const comment = await this.comments
       .findById(commentId)
       .select({ commentBy: 0, __v: 0 });
@@ -110,6 +116,9 @@ class CommentsService {
   public getComments = async (postId: string): Promise<Comments[]> => {
     if (isEmpty(postId))
       throw new HttpException(400, "No post id found in request.");
+
+    if (!mongo.ObjectId.isValid(postId))
+      throw new HttpException(400, "Invalid id.");
 
     const postExists = await this.posts.findById(postId);
     if (!postExists) throw new HttpException(404, "Blog post does not exist.");
