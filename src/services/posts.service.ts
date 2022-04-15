@@ -88,6 +88,9 @@ class PostsService {
     if (isEmpty(postId))
       throw new HttpException(400, "No post id found in request.");
 
+    if (!mongo.ObjectId.isValid(postId))
+      throw new HttpException(400, "Invalid id.");
+
     const postExist = await this.posts.findById(postId);
     if (!postExist) throw new HttpException(409, "Post does not exist.");
 

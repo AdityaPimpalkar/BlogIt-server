@@ -43,11 +43,11 @@ const createPostSchema = Joi.object({
   description: Joi.string().min(3).max(500),
   isPublished: Joi.boolean().required(),
   publishedOn: Joi.number(),
-  createdBy: Joi.string().required(),
+  createdBy: Joi.string().not().empty().required(),
 });
 
 const updatePostSchema = Joi.object({
-  _id: Joi.string().required(),
+  _id: Joi.string().not().empty().required(),
   image: Joi.string(),
   title: Joi.string().min(3).max(100).required(),
   subTitle: Joi.string().min(3).max(100),
