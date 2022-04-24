@@ -10,7 +10,7 @@ const logger = new Logger();
 initializeRoutes(app);
 initializeDatabase();
 
-const server = app.listen(PORT || 3000, () => {
+const server = app.listen(PORT || 3001, () => {
   logger.info(
     `🚀 App listening on the port ${PORT} ENV: ${NODE_ENV || "DEVELOPEMENT"}`
   );
