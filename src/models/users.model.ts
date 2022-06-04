@@ -6,6 +6,7 @@ import {
   CreateUser,
   LoginUser,
   UpdateUser,
+  UserData,
 } from "@interfaces/users.interface";
 import { Token, TokenData } from "@/interfaces/auth.interface";
 import { SECRET_KEY } from "@/config";
@@ -77,7 +78,7 @@ export const validateLogin = (user: LoginUser) =>
 export const validateUpdate = (user: UpdateUser) =>
   updateUserSchema.validate(user);
 
-export const createToken = (user: User): Token => {
+export const createToken = (user: UserData): Token => {
   const dataInToken: TokenData = {
     _id: user._id,
     firstName: user.firstName,

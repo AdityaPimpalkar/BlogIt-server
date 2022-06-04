@@ -61,7 +61,6 @@ class AuthService {
     const passwordMatched = await compare(user.password, findUser.password);
     if (!passwordMatched) throw new HttpException(409, "Invalid password");
 
-    const tokenData = createToken(findUser);
     const userData: UserData = {
       _id: findUser._id,
       firstName: findUser.firstName,
@@ -70,6 +69,8 @@ class AuthService {
       email: findUser.email,
       avatar: findUser.avatar,
     };
+
+    const tokenData = createToken(userData);
 
     return { tokenData, userData };
   };
