@@ -85,6 +85,7 @@ export const createToken = (user: UserData): Token => {
     lastName: user.lastName,
     fullName: user.fullName,
     email: user.email,
+    avatar: user.avatar,
   };
   const secretKey: string = SECRET_KEY;
   const expiresIn: number = 60 * 60;

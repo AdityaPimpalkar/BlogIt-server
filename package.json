@@ -5,8 +5,8 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "start": "npm run build && cross-env NODE_ENV=production node dist/server.js",
-    "dev": "npm run build && cross-env NODE_ENV=development nodemon",
+    "start": "npm run build && cross-env NODE_ENV=production node dist/app.js",
+    "dev": "npm run build && cross-env NODE_ENV=development nodemon dist/app.js",
     "build": "tsc && tsc-alias",
     "build:swc": "swc src -d dist --source-maps --copy-files",
     "test": "jest --coverage --watchAll --forceExit --detectOpenHandles",

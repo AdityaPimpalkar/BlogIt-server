@@ -10,6 +10,7 @@ export interface TokenData {
   lastName: string;
   fullName: string;
   email: string;
+  avatar: string;
 }
 
 export interface RequestWithUser extends Request {
