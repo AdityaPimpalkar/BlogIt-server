@@ -31,6 +31,7 @@ const authMiddleware = async (
           lastName: findUser.lastName,
           fullName: findUser.fullName,
           email: findUser.email,
+          avatar: findUser.avatar,
         };
         req.user = user;
         next();
