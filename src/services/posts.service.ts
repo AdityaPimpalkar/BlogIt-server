@@ -56,7 +56,8 @@ class PostsService {
         new: true,
         upsert: true,
       })
-      .select({ createdBy: 0, __v: 0 });
+      .populate("createdBy", "fullName avatar")
+      .select({ __v: 0 });
 
     return updatedPost;
   };
@@ -94,19 +95,33 @@ class PostsService {
     const postExist = await this.posts.findById(postId);
     if (!postExist) throw new HttpException(409, "Post does not exist.");
 
-    const updatedPost = await this.posts.findById(postId).select({ __v: 0 });
+    const post = await this.posts
+      .findById(postId)
+      .populate("createdBy", "fullName avatar")
+      .select({
+        __v: 0,
+      });
 
-    return updatedPost;
+    return post;
   };
 
   public getPosts = async (
     createdBy: Schema.Types.ObjectId
   ): Promise<Posts[]> => {
-    const updatedPost = await this.posts
+    const Posts = await this.posts
       .find({ createdBy })
       .select({ createdBy: 0, __v: 0 });
 
-    return updatedPost;
+    return Posts;
+  };
+
+  public explorePosts = async (): Promise<Posts[]> => {
+    const Posts = await this.posts
+      .where({ isPublished: true })
+      .populate("createdBy", "fullName avatar")
+      .select({ __v: 0, description: 0 });
+
+    return Posts;
   };
 }
 

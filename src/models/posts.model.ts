@@ -30,6 +30,7 @@ const postsSchema = new Schema({
   createdBy: {
     type: Schema.Types.ObjectId,
     required: true,
+    ref: "User",
   },
 });
 
@@ -39,8 +40,8 @@ export default postsModel;
 const createPostSchema = Joi.object({
   image: Joi.string(),
   title: Joi.string().min(3).max(100).required(),
-  subTitle: Joi.string().min(3).max(100),
-  description: Joi.string().min(3).max(500),
+  subTitle: Joi.string().min(3).max(300),
+  description: Joi.string().required(),
   isPublished: Joi.boolean().required(),
   publishedOn: Joi.number(),
 });
@@ -49,8 +50,8 @@ const updatePostSchema = Joi.object({
   _id: Joi.string().not().empty().required(),
   image: Joi.string(),
   title: Joi.string().min(3).max(100).required(),
-  subTitle: Joi.string().min(3).max(100),
-  description: Joi.string().min(3).max(500),
+  subTitle: Joi.string().min(3).max(300),
+  description: Joi.string().required(),
   isPublished: Joi.boolean().required(),
   publishedOn: Joi.number(),
 });
