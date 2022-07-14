@@ -119,7 +119,7 @@ class PostsService {
     const Posts = await this.posts
       .where({ isPublished: true })
       .populate("createdBy", "fullName avatar")
-      .select({ __v: 0, description: 0 });
+      .select({ __v: 0, subTitle: 0 });
 
     return Posts;
   };
