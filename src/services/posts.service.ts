@@ -85,6 +85,32 @@ class PostsService {
     return updatedPost;
   };
 
+  public getPost = async (
+    createdBy: Schema.Types.ObjectId,
+    postId: string
+  ): Promise<Posts> => {
+    if (isEmpty(postId))
+      throw new HttpException(400, "No post id found in request.");
+
+    if (!mongo.ObjectId.isValid(postId))
+      throw new HttpException(400, "Invalid id.");
+
+    const postExist = await this.posts.findById(postId);
+    if (!postExist) throw new HttpException(409, "Post does not exist.");
+
+    if (JSON.stringify(createdBy) !== JSON.stringify(postExist.createdBy))
+      throw new HttpException(403, "Not authorized to view this post.");
+
+    const post = await this.posts
+      .findById(postId)
+      .populate("createdBy", "fullName avatar")
+      .select({
+        __v: 0,
+      });
+
+    return post;
+  };
+
   public getPostById = async (postId: string): Promise<Posts> => {
     if (isEmpty(postId))
       throw new HttpException(400, "No post id found in request.");

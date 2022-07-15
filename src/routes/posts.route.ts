@@ -9,6 +9,7 @@ router.post("/", authMiddleware, postsController.createPost);
 router.put("/", authMiddleware, postsController.updatePost);
 router.delete("/:id", authMiddleware, postsController.deletePost);
 router.get("/explore", postsController.explorePosts);
+router.get("/edit/:id", authMiddleware, postsController.getPost);
 router.get("/:id", postsController.getPostById);
 router.get("/", authMiddleware, postsController.getPosts);
 

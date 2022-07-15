@@ -8,6 +8,7 @@ import auth from "@routes/auth.route";
 import posts from "@routes/posts.route";
 import users from "@routes/users.route";
 import comments from "@routes/comments.route";
+import bookmarks from "@routes/bookmars.route";
 
 export default function (app: Express) {
   app.use(cors({ origin: ORIGIN }));
@@ -19,6 +20,7 @@ export default function (app: Express) {
   app.use("/posts", posts);
   app.use("/comments", comments);
   app.use("/me", users);
+  app.use("/bookmarks", bookmarks);
 
   app.use(errorMiddleware);
 }

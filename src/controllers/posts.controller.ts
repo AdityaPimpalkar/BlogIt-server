@@ -57,6 +57,23 @@ class PostsController {
     }
   };
 
+  public getPost = async (
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const postId: string = req.params.id;
+      const createdBy = req.user._id;
+
+      const post = await this.postsService.getPost(createdBy, postId);
+
+      res.status(200).json(post);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public getPostById = async (
     req: Request,
     res: Response,

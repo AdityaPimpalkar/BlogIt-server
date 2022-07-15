@@ -4,6 +4,7 @@ import { SECRET_KEY } from "@config";
 import { HttpException } from "@exceptions/HttpException";
 import { RequestWithUser, TokenData } from "@interfaces/auth.interface";
 import userModel from "@models/users.model";
+import { isEmpty } from "@/utils/util";
 
 const authMiddleware = async (
   req: RequestWithUser,
@@ -15,7 +16,7 @@ const authMiddleware = async (
       ? req.header("Authorization").split("Bearer ")[1]
       : null;
 
-    if (Authorization) {
+    if (!isEmpty(Authorization)) {
       const secretKey: string = SECRET_KEY;
       const verificationResponse = verify(
         Authorization,
