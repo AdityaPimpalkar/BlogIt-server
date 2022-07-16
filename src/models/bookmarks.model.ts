@@ -5,7 +5,7 @@ const bookmarksSchema = new Schema({
   post: {
     type: SchemaTypes.ObjectId,
     required: true,
-    ref: "Post",
+    ref: "post",
   },
   bookmarkedBy: {
     type: Schema.Types.ObjectId,

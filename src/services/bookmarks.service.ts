@@ -2,6 +2,7 @@ import { HttpException } from "@/exceptions/HttpException";
 import Bookmarks from "@/interfaces/bookmarks.interface";
 import bookmarksModel from "@/models/bookmarks.model";
 import postsModel from "@/models/posts.model";
+import userModel from "@/models/users.model";
 import { isEmpty } from "@/utils/util";
 import { mongo, Schema } from "mongoose";
 
@@ -19,14 +20,14 @@ class BookmarksService {
     if (!mongo.ObjectId.isValid(postId))
       throw new HttpException(400, "Invalid id.");
 
-    const postExist = await this.posts.findById({ post: postId });
+    const postExist = await this.posts.findById(postId);
     if (!postExist) throw new HttpException(409, "Post does not exist.");
 
     const bookmarkExists = await this.bookmarks.where({
       post: postId,
       bookmarkedBy,
     });
-    if (bookmarkExists)
+    if (bookmarkExists.length > 0)
       throw new HttpException(409, "Post was already bookmarked.");
 
     const bookmarked = this.bookmarks.create({ post: postId, bookmarkedBy });
@@ -54,7 +55,7 @@ class BookmarksService {
     )
       throw new HttpException(403, "Not authorized to bookmark this post.");
 
-    const bookmarked = await this.bookmarks.findByIdAndDelete(bookmarkedBy);
+    const bookmarked = await this.bookmarks.findByIdAndDelete(bookmarkId);
 
     return bookmarked;
   };
@@ -62,9 +63,12 @@ class BookmarksService {
   public getBookmarks = async (
     bookmarkedBy: Schema.Types.ObjectId
   ): Promise<Bookmarks[]> => {
-    const bookmarks = await this.bookmarks
-      .where({ bookmarkedBy })
-      .populate("post");
+    const bookmarks = await this.bookmarks.where({ bookmarkedBy }).populate({
+      path: "post",
+      model: postsModel,
+      populate: { path: "createdBy", model: userModel },
+    });
+
     return bookmarks;
   };
 }

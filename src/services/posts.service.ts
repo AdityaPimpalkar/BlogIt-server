@@ -49,7 +49,8 @@ class PostsService {
     if (JSON.stringify(createdBy) !== JSON.stringify(postExist.createdBy))
       throw new HttpException(403, "Not authorized to update this post.");
 
-    if (post.isPublished && !post.publishedOn) post.publishedOn = Date.now();
+    if (post.isPublished && !postExist.publishedOn)
+      post.publishedOn = Date.now();
 
     const updatedPost = await this.posts
       .findByIdAndUpdate(post._id, post, {

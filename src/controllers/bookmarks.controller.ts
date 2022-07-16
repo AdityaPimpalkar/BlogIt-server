@@ -30,7 +30,7 @@ class BookmarksController {
   ) => {
     try {
       const bookmarkedBy = req.user._id;
-      const bookmarkId: string = req.body.id;
+      const bookmarkId: string = req.params.id;
       const removedBookmark = await this.bookmarksService.removeBookmark(
         bookmarkedBy,
         bookmarkId
