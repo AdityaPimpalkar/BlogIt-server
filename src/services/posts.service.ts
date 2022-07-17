@@ -122,11 +122,14 @@ class PostsService {
     const postExist = await this.posts.findById(postId);
     if (!postExist) throw new HttpException(409, "Post does not exist.");
 
-    const post = await this.posts
-      .findById(postId)
-      .populate("createdBy", "fullName avatar")
-      .select({
-        __v: 0,
+    const [post] = await this.posts
+      .aggregate()
+      .match({ _id: postExist._id })
+      .lookup({
+        from: "users",
+        localField: "createdBy",
+        foreignField: "_id",
+        as: "createdBy",
       });
 
     return post;
@@ -136,17 +139,34 @@ class PostsService {
     createdBy: Schema.Types.ObjectId
   ): Promise<Posts[]> => {
     const Posts = await this.posts
-      .find({ createdBy })
-      .select({ createdBy: 0, __v: 0 });
+      .aggregate()
+      .match({ isPublished: true })
+      .lookup({
+        from: "bookmarks",
+        localField: "_id",
+        foreignField: "post",
+        as: "bookmarked",
+      })
+      .lookup({
+        from: "users",
+        localField: "createdBy",
+        foreignField: "_id",
+        as: "createdBy",
+      });
 
     return Posts;
   };
 
   public explorePosts = async (): Promise<Posts[]> => {
     const Posts = await this.posts
-      .where({ isPublished: true })
-      .populate("createdBy", "fullName avatar")
-      .select({ __v: 0, subTitle: 0 });
+      .aggregate()
+      .match({ isPublished: true })
+      .lookup({
+        from: "users",
+        localField: "createdBy",
+        foreignField: "_id",
+        as: "createdBy",
+      });
 
     return Posts;
   };
