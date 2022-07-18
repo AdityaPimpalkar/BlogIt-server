@@ -112,7 +112,69 @@ class PostsService {
     return post;
   };
 
-  public getPostById = async (postId: string): Promise<Posts> => {
+  public getPostById = async (
+    userId: Schema.Types.ObjectId,
+    postId: string
+  ): Promise<Posts> => {
+    if (isEmpty(postId))
+      throw new HttpException(400, "No post id found in request.");
+
+    if (!mongo.ObjectId.isValid(postId))
+      throw new HttpException(400, "Invalid id.");
+
+    const postExist = await this.posts.findById(postId);
+    if (!postExist) throw new HttpException(409, "Post does not exist.");
+
+    const [post] = await this.posts
+      .aggregate()
+      .match({ _id: postExist._id })
+      .lookup({
+        from: "bookmarks",
+        pipeline: [
+          {
+            $match: { post: postExist._id, bookmarkedBy: userId },
+          },
+        ],
+        as: "bookmarked",
+      })
+      .lookup({
+        from: "users",
+        localField: "createdBy",
+        foreignField: "_id",
+        as: "createdBy",
+      });
+
+    return post;
+  };
+
+  public getPosts = async (userId: Schema.Types.ObjectId): Promise<Posts[]> => {
+    const Posts = await this.posts
+      .aggregate()
+      .match({ isPublished: true })
+      .sort({ publishedOn: -1 })
+      .lookup({
+        from: "bookmarks",
+        let: {
+          id: "$_id",
+        },
+        pipeline: [
+          {
+            $match: { $expr: { $eq: ["$$id", "$post"] }, bookmarkedBy: userId },
+          },
+        ],
+        as: "bookmarked",
+      })
+      .lookup({
+        from: "users",
+        localField: "createdBy",
+        foreignField: "_id",
+        as: "createdBy",
+      });
+
+    return Posts;
+  };
+
+  public explorePostById = async (postId: string): Promise<Posts> => {
     if (isEmpty(postId))
       throw new HttpException(400, "No post id found in request.");
 
@@ -135,32 +197,11 @@ class PostsService {
     return post;
   };
 
-  public getPosts = async (
-    createdBy: Schema.Types.ObjectId
-  ): Promise<Posts[]> => {
-    const Posts = await this.posts
-      .aggregate()
-      .match({ isPublished: true })
-      .lookup({
-        from: "bookmarks",
-        localField: "_id",
-        foreignField: "post",
-        as: "bookmarked",
-      })
-      .lookup({
-        from: "users",
-        localField: "createdBy",
-        foreignField: "_id",
-        as: "createdBy",
-      });
-
-    return Posts;
-  };
-
   public explorePosts = async (): Promise<Posts[]> => {
     const Posts = await this.posts
       .aggregate()
       .match({ isPublished: true })
+      .sort({ publishedOn: -1 })
       .lookup({
         from: "users",
         localField: "createdBy",

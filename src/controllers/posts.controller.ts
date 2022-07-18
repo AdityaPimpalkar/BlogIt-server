@@ -75,14 +75,15 @@ class PostsController {
   };
 
   public getPostById = async (
-    req: Request,
+    req: RequestWithUser,
     res: Response,
     next: NextFunction
   ) => {
     try {
       const postId: string = req.params.id;
+      const userId = req.user._id;
 
-      const post = await this.postsService.getPostById(postId);
+      const post = await this.postsService.getPostById(userId, postId);
 
       res.status(200).json(post);
     } catch (error) {
@@ -101,6 +102,22 @@ class PostsController {
       const posts = await this.postsService.getPosts(createdBy);
 
       res.status(200).json(posts);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public explorePostById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const postId: string = req.params.id;
+
+      const post = await this.postsService.explorePostById(postId);
+
+      res.status(200).json(post);
     } catch (error) {
       next(error);
     }
