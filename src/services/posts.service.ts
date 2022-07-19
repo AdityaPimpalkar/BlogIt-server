@@ -166,6 +166,17 @@ class PostsService {
       })
       .lookup({
         from: "users",
+        let: {
+          id: "$createdBy",
+        },
+        pipeline: [
+          { $match: { _id: userId } },
+          { $match: { $expr: { $in: ["$$id", "$following"] } } },
+        ],
+        as: "isFollowing",
+      })
+      .lookup({
+        from: "users",
         localField: "createdBy",
         foreignField: "_id",
         as: "createdBy",

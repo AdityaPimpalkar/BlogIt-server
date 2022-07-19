@@ -8,6 +8,7 @@ export interface User {
   email: string;
   password: string;
   avatar: string;
+  following: Array<string>;
 }
 
 export interface UserData {

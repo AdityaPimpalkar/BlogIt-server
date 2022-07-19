@@ -46,6 +46,11 @@ const userSchema: Schema = new Schema({
     type: String,
     trim: true,
   },
+  following: {
+    type: [Schema.Types.ObjectId],
+    ref: "User",
+    default: [],
+  },
 });
 
 const userModel = model<User & Document>("User", userSchema);

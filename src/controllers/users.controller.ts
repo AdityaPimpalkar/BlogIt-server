@@ -39,6 +39,25 @@ class UserController {
       next(error);
     }
   };
+
+  public followUser = async (
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const followUserId: string = req.body.id;
+      const userId = req.user._id;
+
+      const updatedUser: UserData = await this.userService.followUser(
+        followUserId,
+        userId
+      );
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default UserController;
