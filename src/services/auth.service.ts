@@ -20,7 +20,9 @@ import { HttpException } from "@exceptions/HttpException";
 class AuthService {
   private users = userModel;
 
-  public signup = async (user: CreateUser): Promise<SignupUser> => {
+  public signup = async (
+    user: CreateUser
+  ): Promise<{ tokenData: Token; userData: UserData }> => {
     if (isEmpty(user)) throw new HttpException(400, "Request body not found");
 
     const validation = validateSignup(user);
@@ -35,13 +37,24 @@ class AuthService {
       throw new HttpException(409, `Your email ${user.email} already exists`);
 
     const hashedPassword = await hash(user.password, 10);
-    const createUserData: SignupUser = await this.users.create({
+    const createdUser: User = await this.users.create({
       ...user,
       fullName: `${user.firstName} ${user.lastName}`,
       password: hashedPassword,
     });
 
-    return createUserData;
+    const userData: UserData = {
+      _id: createdUser._id,
+      firstName: createdUser.firstName,
+      lastName: createdUser.lastName,
+      fullName: createdUser.fullName,
+      email: createdUser.email,
+      avatar: createdUser.avatar,
+    };
+
+    const tokenData = createToken(userData);
+
+    return { tokenData, userData };
   };
 
   public login = async (

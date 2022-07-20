@@ -139,9 +139,52 @@ class PostsService {
       })
       .lookup({
         from: "users",
+        let: {
+          id: "$createdBy",
+        },
+        pipeline: [
+          { $match: { _id: userId } },
+          { $match: { $expr: { $in: ["$$id", "$following"] } } },
+        ],
+        as: "isFollowing",
+      })
+      .lookup({
+        from: "users",
         localField: "createdBy",
         foreignField: "_id",
         as: "createdBy",
+      })
+      .project({
+        _id: 1,
+        title: 1,
+        subTitle: 1,
+        description: 1,
+        publishedOn: 1,
+        isPublished: 1,
+        createdBy: { $arrayElemAt: ["$createdBy", 0] },
+        bookmarked: { $arrayElemAt: ["$bookmarked", 0] },
+        isFollowing: {
+          $cond: {
+            if: { $arrayElemAt: ["$isFollowing", 0] },
+            then: true,
+            else: false,
+          },
+        },
+      })
+      .project({
+        createdBy: {
+          following: 0,
+          password: 0,
+          email: 0,
+          firstName: 0,
+          lastName: 0,
+          __v: 0,
+        },
+        bookmarked: {
+          post: 0,
+          bookmarkedBy: 0,
+          __v: 0,
+        },
       });
 
     return post;
@@ -180,6 +223,37 @@ class PostsService {
         localField: "createdBy",
         foreignField: "_id",
         as: "createdBy",
+      })
+      .project({
+        _id: 1,
+        title: 1,
+        subTitle: 1,
+        description: 1,
+        publishedOn: 1,
+        createdBy: { $arrayElemAt: ["$createdBy", 0] },
+        bookmarked: { $arrayElemAt: ["$bookmarked", 0] },
+        isFollowing: {
+          $cond: {
+            if: { $arrayElemAt: ["$isFollowing", 0] },
+            then: true,
+            else: false,
+          },
+        },
+      })
+      .project({
+        createdBy: {
+          following: 0,
+          password: 0,
+          email: 0,
+          firstName: 0,
+          lastName: 0,
+          __v: 0,
+        },
+        bookmarked: {
+          post: 0,
+          bookmarkedBy: 0,
+          __v: 0,
+        },
       });
 
     return Posts;
@@ -203,6 +277,25 @@ class PostsService {
         localField: "createdBy",
         foreignField: "_id",
         as: "createdBy",
+      })
+      .project({
+        _id: 1,
+        title: 1,
+        subTitle: 1,
+        description: 1,
+        publishedOn: 1,
+        isPublished: 1,
+        createdBy: { $arrayElemAt: ["$createdBy", 0] },
+      })
+      .project({
+        createdBy: {
+          following: 0,
+          password: 0,
+          email: 0,
+          firstName: 0,
+          lastName: 0,
+          __v: 0,
+        },
       });
 
     return post;
@@ -218,6 +311,24 @@ class PostsService {
         localField: "createdBy",
         foreignField: "_id",
         as: "createdBy",
+      })
+      .project({
+        _id: 1,
+        title: 1,
+        subTitle: 1,
+        description: 1,
+        publishedOn: 1,
+        createdBy: { $arrayElemAt: ["$createdBy", 0] },
+      })
+      .project({
+        createdBy: {
+          following: 0,
+          password: 0,
+          email: 0,
+          firstName: 0,
+          lastName: 0,
+          __v: 0,
+        },
       });
 
     return Posts;
