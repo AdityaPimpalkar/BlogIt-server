@@ -1,9 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import {
-  SignupUser,
-  CreateUser,
-  LoginUser,
-} from "@/interfaces/users.interface";
+import { CreateUser, LoginUser } from "@/interfaces/users.interface";
 import AuthService from "@/services/auth.service";
 
 class AuthController {
@@ -12,7 +8,7 @@ class AuthController {
   public signup = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userData: CreateUser = req.body;
-      const user: SignupUser = await this.authService.signup(userData);
+      const user = await this.authService.signup(userData);
 
       res.status(201).json(user);
     } catch (error) {
