@@ -259,6 +259,77 @@ class PostsService {
     return Posts;
   };
 
+  public getMyPosts = async (
+    userId: Schema.Types.ObjectId
+  ): Promise<Posts[]> => {
+    const postFields = {
+      _id: 1,
+      title: 1,
+      subTitle: 1,
+      description: 1,
+      publishedOn: 1,
+      isPublished: 1,
+    };
+    const myPosts = await this.posts
+      .aggregate()
+      .lookup({
+        from: "users",
+        let: {
+          id: "$createdBy",
+        },
+        pipeline: [
+          { $match: { _id: userId } },
+          { $match: { $expr: { $in: ["$$id", "$following"] } } },
+        ],
+        as: "isFollowing",
+      })
+      .lookup({
+        from: "users",
+        localField: "createdBy",
+        foreignField: "_id",
+        as: "createdBy",
+      })
+      .lookup({
+        from: "bookmarks",
+        let: {
+          id: "$_id",
+        },
+        pipeline: [
+          {
+            $match: { $expr: { $eq: ["$$id", "$post"] }, bookmarkedBy: userId },
+          },
+        ],
+        as: "bookmarked",
+      })
+      .project({
+        ...postFields,
+        createdBy: { $arrayElemAt: ["$createdBy", 0] },
+        bookmarked: { $arrayElemAt: ["$bookmarked", 0] },
+        isFollowing: {
+          $cond: {
+            if: { $arrayElemAt: ["$isFollowing", 0] },
+            then: true,
+            else: false,
+          },
+        },
+      })
+      .match({ isFollowing: true, isPublished: true })
+      .project({
+        ...postFields,
+        createdBy: {
+          _id: 1,
+          fullName: 1,
+          avatar: 1,
+        },
+        bookmarked: {
+          _id: 1,
+        },
+      })
+      .sort({ publishedOn: -1 });
+
+    return myPosts;
+  };
+
   public explorePostById = async (postId: string): Promise<Posts> => {
     if (isEmpty(postId))
       throw new HttpException(400, "No post id found in request.");

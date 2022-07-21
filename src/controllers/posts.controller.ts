@@ -107,6 +107,20 @@ class PostsController {
     }
   };
 
+  public getMyPosts = async (
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const userId = req.user._id;
+    const posts = await this.postsService.getMyPosts(userId);
+    res.status(200).send(posts);
+    try {
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public explorePostById = async (
     req: Request,
     res: Response,

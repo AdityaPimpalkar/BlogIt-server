@@ -11,6 +11,7 @@ router.delete("/:id", authMiddleware, postsController.deletePost);
 router.get("/explore", postsController.explorePosts);
 router.get("/explore/:id", postsController.explorePostById);
 router.get("/edit/:id", authMiddleware, postsController.getPost);
+router.get("/myposts", authMiddleware, postsController.getMyPosts);
 router.get("/:id", authMiddleware, postsController.getPostById);
 router.get("/", authMiddleware, postsController.getPosts);
 
