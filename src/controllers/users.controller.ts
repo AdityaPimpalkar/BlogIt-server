@@ -58,6 +58,22 @@ class UserController {
       next(error);
     }
   };
+
+  public followingUsers = async (
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const followUserId: string = req.body.id;
+      const userId = req.user._id;
+
+      const users: UserData = await this.userService.followingUsers(userId);
+      res.status(200).json(users);
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default UserController;

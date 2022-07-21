@@ -52,6 +52,12 @@ class UserService {
     if (isEmpty(followUserId))
       throw new HttpException(400, "No user details in body");
 
+    if (JSON.stringify(followUserId) !== JSON.stringify(userId))
+      throw new HttpException(
+        400,
+        "Invalid operation. Please check the details."
+      );
+
     const userExists = await this.users.findById(followUserId);
     if (!userExists) throw new HttpException(409, "User does not exist.");
 
@@ -78,6 +84,16 @@ class UserService {
       });
 
     return updatedUser;
+  };
+
+  public followingUsers = async (
+    userId: Schema.Types.ObjectId
+  ): Promise<UserData> => {
+    const users = await this.users
+      .findById(userId)
+      .populate("following", "_id fullName avatar")
+      .select({ following: 1, _id: 0 });
+    return users;
   };
 }
 
