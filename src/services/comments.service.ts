@@ -8,6 +8,7 @@ import commentsModel, {
   validateUpdateComment,
 } from "@/models/comments.model";
 import postsModel from "@/models/posts.model";
+import userModel from "@/models/users.model";
 import { isEmpty } from "@/utils/util";
 import { mongo, Schema } from "mongoose";
 
@@ -125,7 +126,15 @@ class CommentsService {
 
     const comments = await this.comments
       .find({ postId: postExists._id })
-      .select({ commentBy: 0, __v: 0 });
+      .populate({
+        path: "commentBy",
+        select: "fullName avatar",
+        model: userModel,
+      })
+      .select({
+        _id: 1,
+        comment: 1,
+      });
 
     return comments;
   };

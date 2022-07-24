@@ -18,6 +18,7 @@ const commentSchema = new Schema({
   commentBy: {
     type: Schema.Types.ObjectId,
     required: true,
+    ref: "User",
   },
 });
 
@@ -27,7 +28,6 @@ export default commentsModel;
 const createCommentSchema = Joi.object({
   postId: Joi.string().not().empty().required(),
   comment: Joi.string().not().empty().required(),
-  commentBy: Joi.string().not().empty().required(),
 });
 
 const updateCommentSchema = Joi.object({
