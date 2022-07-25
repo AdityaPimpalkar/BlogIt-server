@@ -107,6 +107,34 @@ class PostsController {
     }
   };
 
+  public getHomePosts = async (
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const userId = req.user._id;
+    const posts = await this.postsService.getHomePosts(userId);
+    res.status(200).send(posts);
+    try {
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getMyDrafts = async (
+    req: RequestWithUser,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const userId = req.user._id;
+    const posts = await this.postsService.getMyDrafts(userId);
+    res.status(200).send(posts);
+    try {
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public getMyPosts = async (
     req: RequestWithUser,
     res: Response,

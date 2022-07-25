@@ -259,7 +259,7 @@ class PostsService {
     return Posts;
   };
 
-  public getMyPosts = async (
+  public getHomePosts = async (
     userId: Schema.Types.ObjectId
   ): Promise<Posts[]> => {
     const postFields = {
@@ -326,6 +326,25 @@ class PostsService {
         },
       })
       .sort({ publishedOn: -1 });
+
+    return myPosts;
+  };
+
+  public getMyDrafts = async (
+    userId: Schema.Types.ObjectId
+  ): Promise<Posts[]> => {
+    const drafts = this.posts
+      .find({ createdBy: userId })
+      .where({ isPublished: false });
+    return drafts;
+  };
+
+  public getMyPosts = async (
+    userId: Schema.Types.ObjectId
+  ): Promise<Posts[]> => {
+    const myPosts = this.posts
+      .find({ createdBy: userId })
+      .where({ isPublished: true });
 
     return myPosts;
   };

@@ -52,7 +52,7 @@ class UserService {
     if (isEmpty(followUserId))
       throw new HttpException(400, "No user details in body");
 
-    if (JSON.stringify(followUserId) !== JSON.stringify(userId))
+    if (JSON.stringify(followUserId) === JSON.stringify(userId))
       throw new HttpException(
         400,
         "Invalid operation. Please check the details."
