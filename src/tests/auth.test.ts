@@ -18,7 +18,7 @@ describe("/auth", () => {
   afterAll(async () => {
     appServer.close();
     await disconnect();
-    await new Promise<void>((resolve) => setTimeout(() => resolve(), 500));
+    // await new Promise<void>((resolve) => setTimeout(() => resolve(), 5000));
   });
 
   describe("/signup", () => {
@@ -171,14 +171,15 @@ describe("/auth", () => {
           .send(dummyUser);
 
         expect(res.status).toBe(201);
-        expect(res.body).toHaveProperty("firstName", "firstName1");
+        expect(res.body).toHaveProperty("tokenData");
+        expect(res.body).toHaveProperty("userData");
       });
     });
   });
 
   describe("/login", () => {
     it("should return 400 if login details is missing", async () => {
-      const res = await request(appServer).post("/auth/login").send(null);
+      const res = await request(appServer).post("/auth/login").send(undefined);
 
       expect(res.status).toBe(400);
       expect(res.body.message).toMatch(/No login details in body/);
@@ -277,6 +278,7 @@ describe("/auth", () => {
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty("tokenData");
+      expect(res.body).toHaveProperty("userData");
     });
   });
 });

@@ -29,6 +29,7 @@ describe("/comments", () => {
   afterEach(async () => {
     await usersModel.deleteMany({});
     await postsModel.deleteMany({});
+    await commentsModel.deleteMany({});
   });
 
   afterAll(async () => {
@@ -50,7 +51,7 @@ describe("/comments", () => {
           const res = await request(appServer)
             .post("/comments")
             .set("Authorization", `Bearer ${tokenData.token}`)
-            .send(null);
+            .send(undefined);
           expect(res.status).toBe(400);
           expect(res.body.message).toMatch(/No comment details in body./);
         });
@@ -165,7 +166,6 @@ describe("/comments", () => {
           const body = {
             postId: new mongo.ObjectId().toHexString(),
             comment: "aaa",
-            commentBy: "aaaa",
           };
 
           const res = await request(appServer)
@@ -193,7 +193,6 @@ describe("/comments", () => {
         const body = {
           postId: createdPost._id,
           comment: "aaa",
-          commentBy: "aaaa",
         };
 
         const res = await request(appServer)
@@ -219,7 +218,7 @@ describe("/comments", () => {
           const res = await request(appServer)
             .put("/comments")
             .set("Authorization", `Bearer ${tokenData.token}`)
-            .send(null);
+            .send(undefined);
           expect(res.status).toBe(400);
           expect(res.body.message).toMatch(/No comment details in body./);
         });

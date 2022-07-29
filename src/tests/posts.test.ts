@@ -50,7 +50,7 @@ describe("/posts", () => {
           const res = await request(appServer)
             .post("/posts")
             .set("Authorization", `Bearer ${tokenData.token}`)
-            .send(null);
+            .send(undefined);
 
           expect(res.status).toBe(400);
           expect(res.body.message).toMatch(/No post details in body./);
@@ -143,15 +143,14 @@ describe("/posts", () => {
           );
         });
 
-        it("should return 400 if subTitle has more than 100 characters", async () => {
+        it("should return 400 if subTitle has more than 300 characters", async () => {
           const tokenData = createToken(createdUser);
 
           const body = {
             title: "aaa",
-            subTitle: "aa".repeat(101),
+            subTitle: "aa".repeat(301),
             description: "aaa",
             isPublished: false,
-            createdBy: createdUser._id,
           };
 
           const res = await request(appServer)
@@ -161,19 +160,17 @@ describe("/posts", () => {
 
           expect(res.status).toBe(400);
           expect(res.body.message).toMatch(
-            /Invalid post details - ValidationError: "subTitle" length must be less than or equal to 100 characters long/
+            /Invalid post details - ValidationError: "subTitle" length must be less than or equal to 300 characters long/
           );
         });
 
-        it("should return 400 if description has less than 3 characters", async () => {
+        it("should return 400 if no description was provided", async () => {
           const tokenData = createToken(createdUser);
 
           const body = {
             title: "aaa",
             subTitle: "aaa",
-            description: "aa",
             isPublished: false,
-            createdBy: createdUser._id,
           };
 
           const res = await request(appServer)
@@ -183,29 +180,7 @@ describe("/posts", () => {
 
           expect(res.status).toBe(400);
           expect(res.body.message).toMatch(
-            /Invalid post details - ValidationError: "description" length must be at least 3 characters long/
-          );
-        });
-
-        it("should return 400 if description has more than 500 characters", async () => {
-          const tokenData = createToken(createdUser);
-
-          const body = {
-            title: "aaa",
-            subTitle: "aaa",
-            description: "aaa".repeat(501),
-            isPublished: false,
-            createdBy: createdUser._id,
-          };
-
-          const res = await request(appServer)
-            .post("/posts")
-            .set("Authorization", `Bearer ${tokenData.token}`)
-            .send(body);
-
-          expect(res.status).toBe(400);
-          expect(res.body.message).toMatch(
-            /Invalid post details - ValidationError: "description" length must be less than or equal to 500 characters long/
+            /Invalid post details - ValidationError: "description" is required/
           );
         });
 
@@ -216,7 +191,6 @@ describe("/posts", () => {
             title: "aaa",
             subTitle: "aaa",
             description: "aaa",
-            createdBy: createdUser._id,
           };
 
           const res = await request(appServer)
@@ -229,27 +203,6 @@ describe("/posts", () => {
             /Invalid post details - ValidationError: "isPublished" is required/
           );
         });
-
-        it("should return 400 if createdBy was not provided", async () => {
-          const tokenData = createToken(createdUser);
-
-          const body = {
-            title: "aaa",
-            subTitle: "aaa",
-            description: "aaa",
-            isPublished: false,
-          };
-
-          const res = await request(appServer)
-            .post("/posts")
-            .set("Authorization", `Bearer ${tokenData.token}`)
-            .send(body);
-
-          expect(res.status).toBe(400);
-          expect(res.body.message).toMatch(
-            /Invalid post details - ValidationError: "createdBy" is required/
-          );
-        });
       });
 
       it("should return a new post object if client passed valid details", async () => {
@@ -260,7 +213,6 @@ describe("/posts", () => {
           subTitle: "aaa",
           description: "aaa",
           isPublished: false,
-          createdBy: createdUser._id,
         };
 
         const res = await request(appServer)
@@ -285,7 +237,7 @@ describe("/posts", () => {
           const res = await request(appServer)
             .put("/posts")
             .set("Authorization", `Bearer ${tokenData.token}`)
-            .send(null);
+            .send(undefined);
 
           expect(res.status).toBe(400);
           expect(res.body.message).toMatch(/No post details in body./);
@@ -299,7 +251,6 @@ describe("/posts", () => {
             subTitle: "aaa",
             description: "aaa",
             isPublished: false,
-            createdBy: createdUser._id,
           };
 
           const res = await request(appServer)
@@ -321,7 +272,6 @@ describe("/posts", () => {
             subTitle: "aaa",
             description: "aaa",
             isPublished: false,
-            createdBy: createdUser._id,
           };
 
           const res = await request(appServer)
@@ -344,7 +294,6 @@ describe("/posts", () => {
             subTitle: "aaa",
             description: "aaa",
             isPublished: false,
-            createdBy: createdUser._id,
           };
 
           const res = await request(appServer)
@@ -367,7 +316,6 @@ describe("/posts", () => {
             subTitle: "aaa",
             description: "aaa",
             isPublished: false,
-            createdBy: createdUser._id,
           };
 
           const res = await request(appServer)
@@ -390,7 +338,6 @@ describe("/posts", () => {
             subTitle: "aa",
             description: "aaa",
             isPublished: false,
-            createdBy: createdUser._id,
           };
 
           const res = await request(appServer)
@@ -404,16 +351,15 @@ describe("/posts", () => {
           );
         });
 
-        it("should return 400 if subTitle has more than 100 characters", async () => {
+        it("should return 400 if subTitle has more than 300 characters", async () => {
           const tokenData = createToken(createdUser);
 
           const body = {
             _id,
             title: "aaa",
-            subTitle: "aa".repeat(101),
+            subTitle: "aa".repeat(301),
             description: "aaa",
             isPublished: false,
-            createdBy: createdUser._id,
           };
 
           const res = await request(appServer)
@@ -423,20 +369,18 @@ describe("/posts", () => {
 
           expect(res.status).toBe(400);
           expect(res.body.message).toMatch(
-            /Invalid post details - ValidationError: "subTitle" length must be less than or equal to 100 characters long/
+            /Invalid post details - ValidationError: "subTitle" length must be less than or equal to 300 characters long/
           );
         });
 
-        it("should return 400 if description has less than 3 characters", async () => {
+        it("should return 400 if no description was provided", async () => {
           const tokenData = createToken(createdUser);
 
           const body = {
             _id,
             title: "aaa",
             subTitle: "aaa",
-            description: "aa",
             isPublished: false,
-            createdBy: createdUser._id,
           };
 
           const res = await request(appServer)
@@ -446,30 +390,7 @@ describe("/posts", () => {
 
           expect(res.status).toBe(400);
           expect(res.body.message).toMatch(
-            /Invalid post details - ValidationError: "description" length must be at least 3 characters long/
-          );
-        });
-
-        it("should return 400 if description has more than 500 characters", async () => {
-          const tokenData = createToken(createdUser);
-
-          const body = {
-            _id,
-            title: "aaa",
-            subTitle: "aaa",
-            description: "aaa".repeat(501),
-            isPublished: false,
-            createdBy: createdUser._id,
-          };
-
-          const res = await request(appServer)
-            .put("/posts")
-            .set("Authorization", `Bearer ${tokenData.token}`)
-            .send(body);
-
-          expect(res.status).toBe(400);
-          expect(res.body.message).toMatch(
-            /Invalid post details - ValidationError: "description" length must be less than or equal to 500 characters long/
+            /Invalid post details - ValidationError: "description" is required/
           );
         });
 
@@ -498,17 +419,6 @@ describe("/posts", () => {
 
       it("should return 409 if post does not exist", async () => {
         const tokenData = createToken(createdUser);
-
-        const post = {
-          _id,
-          title: "aaa",
-          subTitle: "aaa",
-          description: "aaa",
-          isPublished: false,
-          createdBy: createdUser._id,
-        };
-
-        await postsModel.create(post);
 
         const body = {
           _id: new mongo.ObjectId().toHexString(),
@@ -745,7 +655,8 @@ describe("/posts", () => {
           title: "aaa",
           subTitle: "aaa",
           description: "aaa",
-          isPublished: false,
+          isPublished: true,
+          publishedOn: Date.now(),
           createdBy: createdUser._id,
         };
 
