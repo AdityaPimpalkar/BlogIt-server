@@ -171,6 +171,17 @@ describe("bookmarks", () => {
         expect(res.body.message).toMatch(/No bookmark id found in request./);
       });
 
+      it("should return 400 if bookmark id passed was invalid object id.", async () => {
+        const tokenData = createToken(createdUser);
+
+        const res = await request(appServer)
+          .delete(`/bookmarks/1234`)
+          .set("Authorization", `Bearer ${tokenData.token}`);
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toMatch(/Invalid id./);
+      });
+
       it("should return 404 if bookmark id passed was not found.", async () => {
         const tokenData = createToken(createdUser);
 
@@ -230,6 +241,51 @@ describe("bookmarks", () => {
 
         expect(res.status).toBe(200);
         expect(res.body).toHaveProperty("post", _id);
+      });
+    });
+  });
+
+  describe("GET /", () => {
+    describe("getBookmarks", () => {
+      it("should return 401 if no authentication token was not provided", async () => {
+        const res = await request(appServer).get(`/bookmarks`);
+        expect(res.status).toBe(401);
+      });
+      it("should return all bookmarks which are bookmarked by client", async () => {
+        const tokenData = createToken(createdUser);
+
+        const post = {
+          _id,
+          title: "aaa",
+          subTitle: "aaa",
+          description: "aaa",
+          isPublished: false,
+          createdBy: new mongo.ObjectId().toHexString(),
+        };
+
+        await postsModel.create(post);
+
+        const bookmark = {
+          post: _id,
+          bookmarkedBy: createdUser._id,
+        };
+
+        await bookmarksModel.create(bookmark);
+
+        const res = await request(appServer)
+          .get(`/bookmarks`)
+          .set("Authorization", `Bearer ${tokenData.token}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              post: expect.objectContaining({
+                title: "aaa",
+              }),
+            }),
+          ])
+        );
       });
     });
   });
