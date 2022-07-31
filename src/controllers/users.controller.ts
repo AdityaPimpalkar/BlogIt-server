@@ -65,7 +65,6 @@ class UserController {
     next: NextFunction
   ) => {
     try {
-      const followUserId: string = req.body.id;
       const userId = req.user._id;
 
       const users: UserData = await this.userService.followingUsers(userId);
