@@ -843,7 +843,7 @@ describe("/posts", () => {
     });
 
     describe("getHomePots", () => {
-      it("should return 200 if no authentication token was provided", async () => {
+      it("should return 401 if no authentication token was provided", async () => {
         const res = await request(appServer).get(`/posts/homeposts`);
 
         expect(res.status).toBe(401);
@@ -866,6 +866,39 @@ describe("/posts", () => {
         const createdPost = await postsModel.create(post);
 
         expect(res.status).toBe(200);
+      });
+    });
+
+    describe("getMyDrafts", () => {
+      it("should return 401 if no authentication token was provided", async () => {
+        const res = await request(appServer).get(`/posts/mydrafts`);
+
+        expect(res.status).toBe(401);
+      });
+
+      it("should return 200 and an array of clients posts which are not published", async () => {
+        const post = {
+          title: "aaaaaa",
+          subtitle: "aaaaaa",
+          description: "aaaaaaa",
+          isPublished: false,
+          createdBy: createdUser._id,
+        };
+
+        await postsModel.create(post);
+
+        const res = await request(appServer)
+          .get(`/posts/mydrafts`)
+          .set("Authorization", `Bearer ${tokenData.token}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              isPublished: false,
+            }),
+          ])
+        );
       });
     });
   });
