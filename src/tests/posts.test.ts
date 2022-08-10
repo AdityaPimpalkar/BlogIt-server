@@ -18,12 +18,22 @@ describe("/posts", () => {
   });
 
   beforeEach(async () => {
+    const user = await usersModel.create({
+      _id,
+      firstName: "firstName",
+      lastName: "lastName",
+      fullName: "fullName",
+      email: "test@test.test",
+      password: "password",
+    });
+
     createdUser = await usersModel.create({
       firstName: "firstName1",
       lastName: "lastName1",
       fullName: "fullName1",
       email: "test1@test1.test",
       password: "password",
+      following: [_id],
     });
 
     tokenData = createToken(createdUser);
@@ -842,7 +852,7 @@ describe("/posts", () => {
       });
     });
 
-    describe("getHomePots", () => {
+    describe("getHomePosts", () => {
       it("should return 401 if no authentication token was provided", async () => {
         const res = await request(appServer).get(`/posts/homeposts`);
 
@@ -850,22 +860,32 @@ describe("/posts", () => {
       });
 
       it("should return 200 and array of posts which are followed by client.", async () => {
-        const res = await request(appServer)
-          .get(`/posts/homeposts`)
-          .set("Authorization", `Bearer ${tokenData.token}`);
-
         const post = {
           title: "aaaaaa",
           subtitle: "aaaaaa",
           description: "aaaaaaa",
           isPublished: true,
           publishedOn: Date.now(),
-          createdBy: createdUser._id,
+          createdBy: _id,
         };
 
-        const createdPost = await postsModel.create(post);
+        await postsModel.create(post);
+
+        const res = await request(appServer)
+          .get(`/posts/homeposts`)
+          .set("Authorization", `Bearer ${tokenData.token}`);
 
         expect(res.status).toBe(200);
+        expect(res.body).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              title: "aaaaaa",
+              createdBy: expect.objectContaining({
+                _id,
+              }),
+            }),
+          ])
+        );
       });
     });
 
