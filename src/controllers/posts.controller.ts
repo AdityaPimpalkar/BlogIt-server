@@ -96,15 +96,11 @@ class PostsController {
     res: Response,
     next: NextFunction
   ) => {
-    try {
-      const createdBy = req.user._id;
+    const createdBy = req.user._id;
 
-      const posts = await this.postsService.getPosts(createdBy);
+    const posts = await this.postsService.getPosts(createdBy);
 
-      res.status(200).json(posts);
-    } catch (error) {
-      next(error);
-    }
+    res.status(200).json(posts);
   };
 
   public getHomePosts = async (
@@ -115,10 +111,6 @@ class PostsController {
     const userId = req.user._id;
     const posts = await this.postsService.getHomePosts(userId);
     res.status(200).send(posts);
-    try {
-    } catch (error) {
-      next(error);
-    }
   };
 
   public getMyDrafts = async (
@@ -129,10 +121,6 @@ class PostsController {
     const userId = req.user._id;
     const posts = await this.postsService.getMyDrafts(userId);
     res.status(200).send(posts);
-    try {
-    } catch (error) {
-      next(error);
-    }
   };
 
   public getMyPosts = async (
@@ -143,10 +131,6 @@ class PostsController {
     const userId = req.user._id;
     const posts = await this.postsService.getMyPosts(userId);
     res.status(200).send(posts);
-    try {
-    } catch (error) {
-      next(error);
-    }
   };
 
   public explorePostById = async (
@@ -154,15 +138,9 @@ class PostsController {
     res: Response,
     next: NextFunction
   ) => {
-    try {
-      const postId: string = req.params.id;
-
-      const post = await this.postsService.explorePostById(postId);
-
-      res.status(200).json(post);
-    } catch (error) {
-      next(error);
-    }
+    const postId: string = req.params.id;
+    const post = await this.postsService.explorePostById(postId);
+    res.status(200).json(post);
   };
 
   public explorePosts = async (
@@ -172,7 +150,6 @@ class PostsController {
   ) => {
     try {
       const posts = await this.postsService.explorePosts();
-
       res.status(200).json(posts);
     } catch (error) {
       next(error);
